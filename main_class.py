@@ -1,32 +1,24 @@
 import time
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import tkinter
 from tkinter import messagebox
 
-page_url = str
+import store_data
+
+
 url_pages = str('splide02-slide0')
 current_page = int(1)
-
-
-def switch_page(state):
-    global url_pages
-    global current_page
-
-    if state == 'next':
-        num = str(current_page + 1)
-        new_url = str('splide02-slide' + str(num))
-        print(new_url)
-
-    elif state == 'previous':
-        num = str(current_page - 1)
-        new_url = str('splide02-slide' + str(num))
-        print(new_url)
+num_primary_key = int(1)
+main_url = str
 
 
 def find_ticket():
-    global page_url
+    global num_primary_key
+
+    global main_url
     name_origin_city = str(entry_origin.get())
     if name_origin_city == '':
         messagebox.showerror("Error", "Please enter name for origin")
@@ -57,16 +49,62 @@ def find_ticket():
         press_enter = driver.find_element(By.XPATH, '//*[@id="date-panel__btn-search2"]/span')
         press_enter.click()
 
-        page_url = str(driver.current_url)
-        my_list = list(page_url)
-        size = len(my_list)
-        first_size = size
+        main_url = str(driver.current_url)
+        go_to_next_page = tkinter.Label(text="If you want to switch between pages, press the buttons",
+                                        font=('Arial', 12))
+        go_to_next_page.place(x=50, y=200)
+        btn_next_page = tkinter.Button(text="next page", font=('Arial', 12), command=lambda: switch_page('next'),
+                                       width=15)
+        btn_next_page.place(x=250, y=240)
+        btn_previous_page = tkinter.Button(text='previous page', font=('Arial', 12),
+                                           command=lambda: switch_page('previous'), width=15)
+        btn_previous_page.place(x=50, y=240)
 
-        second_size = size - 8
-        date = ''
-        for i in range(int(second_size), int(first_size)):
-            date += my_list[i]
-        print(f'Date of today\'s tickets= {date}')
+
+
+        return_date(str(driver.current_url))
+
+
+
+        name_of_company = driver.find_elements(By.CLASS_NAME, 'ticketDetailRouteInformation_company__7hGqO')
+
+        the_time_of_moving = driver.find_elements(By.CLASS_NAME, 'ticketAction_time__T9_WZ')
+
+        empty_seat = driver.find_elements(By.CSS_SELECTOR, '.ticketAction_seat__QP645 p')
+
+        amount_payable = driver.find_elements(By.CSS_SELECTOR, '.ticketAction_price__Sk7X3 p')
+
+        model_bus = driver.find_elements(By.CSS_SELECTOR, '.ticketDetailBusInformation_model__05uN0 p')
+
+        # for i in range(len(name_of_company)):
+        #     store_data.add_data(num_primary_key, name_of_company[i], the_time_of_moving[i], amount_payable[i], model_bus[i])
+        #     num_primary_key += 1
+
+
+    except:
+        messagebox.showerror("Error", "Please enter invalid name, please try again.")
+
+
+def switch_page(state):
+    global url_pages
+    global current_page
+    global main_url
+
+    if state == 'next':
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_experimental_option("detach", True)
+        driver = webdriver.Chrome(options=chrome_options)
+        First_tab = str(main_url)
+        driver.get(First_tab)
+
+        num = str(int(current_page) + 1)
+        current_page = int(current_page) + 1
+        new_url = str(url_pages + str(num))
+        press_btn = driver.find_element(By.ID, new_url)
+        press_btn.click()
+        main_url = str(driver.current_url)
+
+        return_date(str(driver.current_url))
 
         name_of_company = driver.find_elements(By.CLASS_NAME, 'ticketDetailRouteInformation_company__7hGqO')
 
@@ -79,14 +117,51 @@ def find_ticket():
         model_bus = driver.find_elements(By.CSS_SELECTOR, '.ticketDetailBusInformation_model__05uN0 p')
         for i in range(len(amount_payable)):
             print(amount_payable[i].text)
+    elif state == 'previous':
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_experimental_option("detach", True)
+        driver = webdriver.Chrome(options=chrome_options)
+        First_tab = str(main_url)
+        driver.get(First_tab)
+
+        num = str(int(current_page) - 1)
+        current_page = int(current_page) - 1
+        new_url = str(url_pages + str(num))
+        press_btn = driver.find_element(By.ID, new_url)
+        press_btn.click()
+        main_url = str(driver.current_url)
+
+        return_date(str(driver.current_url))
+
+
+        name_of_company = driver.find_elements(By.CLASS_NAME, 'ticketDetailRouteInformation_company__7hGqO')
+
+        the_time_of_moving = driver.find_elements(By.CLASS_NAME, 'ticketAction_time__T9_WZ')
+
+        empty_seat = driver.find_elements(By.CSS_SELECTOR, '.ticketAction_seat__QP645 p')
+
+        amount_payable = driver.find_elements(By.CSS_SELECTOR, '.ticketAction_price__Sk7X3 p')
+
+        model_bus = driver.find_elements(By.CSS_SELECTOR, '.ticketDetailBusInformation_model__05uN0 p')
 
 
 
-    except:
-        messagebox.showerror("Error", "Please enter invalid name, please try again.")
+
+def return_date(page_url):
+    my_list = list(page_url)
+    size = len(my_list)
+    first_size = size
+
+    second_size = size - 8
+    date = ''
+    for i in range(int(second_size), int(first_size)):
+        date += my_list[i]
+    print(f'Date of today\'s tickets: {date}')
+    time.sleep(3)
 
 
 window = tkinter.Tk()
+
 window.title("Scraping Website")
 window.geometry("500x500")
 window.minsize(500, 500)
@@ -100,15 +175,7 @@ label_destination = tkinter.Label(window, text="Please enter your destination:",
 label_destination.place(x=50, y=100)
 entry_destination = tkinter.Entry(window, font=("Arial", 12))
 entry_destination.place(x=280, y=100)
-btn_check = tkinter.Button(window, text="Check", font=("Arial", 12), command=find_ticket,width=15)
+btn_check = tkinter.Button(window, text="Check", font=("Arial", 12), command=find_ticket, width=15)
 btn_check.place(x=50, y=150)
-
-go_to_next_page = tkinter.Label(text="If you want to switch between pages, press the buttons", font=('Arial', 12))
-go_to_next_page.place(x=50, y=200)
-btn_next_page = tkinter.Button(text="next page", font=('Arial', 12), command=lambda: switch_page('next'),width=15)
-btn_next_page.place(x=250, y=240)
-btn_previous_page = tkinter.Button(text='previous page', font=('Arial', 12), command=lambda: switch_page('previous'),width=15)
-btn_previous_page.place(x=50, y=240)
-
 
 window.mainloop()
