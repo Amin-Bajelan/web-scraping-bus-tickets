@@ -78,7 +78,7 @@ def find_ticket():
 
 
     except:
-        messagebox.showerror("Error", "Please enter invalid name, please try again.")
+        messagebox.showerror("Error", "Please try again something went wrong..")
 
 
 def switch_page(state):
