@@ -8,7 +8,6 @@ from tkinter import messagebox
 
 import store_data
 
-
 url_pages = str('splide02-slide0')
 current_page = int(1)
 num_primary_key = int(1)
@@ -60,11 +59,7 @@ def find_ticket():
                                            command=lambda: switch_page('previous'), width=15)
         btn_previous_page.place(x=50, y=240)
 
-
-
         return_date(str(driver.current_url))
-
-
 
         name_of_company = driver.find_elements(By.CLASS_NAME, 'ticketDetailRouteInformation_company__7hGqO')
 
@@ -76,9 +71,10 @@ def find_ticket():
 
         model_bus = driver.find_elements(By.CSS_SELECTOR, '.ticketDetailBusInformation_model__05uN0 p')
 
-        # for i in range(len(name_of_company)):
-        #     store_data.add_data(num_primary_key, name_of_company[i], the_time_of_moving[i], amount_payable[i], model_bus[i])
-        #     num_primary_key += 1
+        for i in range(len(empty_seat)):
+            store_data.add_data(int(num_primary_key),str(name_of_company[i].text), str(the_time_of_moving[i].text), str(empty_seat[i].text), str(amount_payable[i].text), str(model_bus[i].text))
+
+            num_primary_key += 1
 
 
     except:
@@ -86,6 +82,7 @@ def find_ticket():
 
 
 def switch_page(state):
+    global num_primary_key
     global url_pages
     global current_page
     global main_url
@@ -115,8 +112,10 @@ def switch_page(state):
         amount_payable = driver.find_elements(By.CSS_SELECTOR, '.ticketAction_price__Sk7X3 p')
 
         model_bus = driver.find_elements(By.CSS_SELECTOR, '.ticketDetailBusInformation_model__05uN0 p')
-        for i in range(len(amount_payable)):
-            print(amount_payable[i].text)
+        for i in range(len(empty_seat)):
+            store_data.add_data(int(num_primary_key),str(name_of_company[i].text), str(the_time_of_moving[i].text), str(empty_seat[i].text), str(amount_payable[i].text), str(model_bus[i].text))
+
+            num_primary_key += 1
     elif state == 'previous':
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_experimental_option("detach", True)
@@ -133,7 +132,6 @@ def switch_page(state):
 
         return_date(str(driver.current_url))
 
-
         name_of_company = driver.find_elements(By.CLASS_NAME, 'ticketDetailRouteInformation_company__7hGqO')
 
         the_time_of_moving = driver.find_elements(By.CLASS_NAME, 'ticketAction_time__T9_WZ')
@@ -143,8 +141,10 @@ def switch_page(state):
         amount_payable = driver.find_elements(By.CSS_SELECTOR, '.ticketAction_price__Sk7X3 p')
 
         model_bus = driver.find_elements(By.CSS_SELECTOR, '.ticketDetailBusInformation_model__05uN0 p')
+        for i in range(len(empty_seat)):
+            store_data.add_data(int(num_primary_key),str(name_of_company[i].text), str(the_time_of_moving[i].text), str(empty_seat[i].text), str(amount_payable[i].text), str(model_bus[i].text))
 
-
+            num_primary_key += 1
 
 
 def return_date(page_url):
@@ -179,3 +179,6 @@ btn_check = tkinter.Button(window, text="Check", font=("Arial", 12), command=fin
 btn_check.place(x=50, y=150)
 
 window.mainloop()
+
+
+

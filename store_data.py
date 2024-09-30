@@ -1,18 +1,17 @@
 import mysql.connector
 import database_info
 
-mydb = mysql.connector.connect(
-    host=str(database_info.host),
-    user=str(database_info.user),
-    passwd=str(database_info.passwd),
-    database=str(database_info.database),
-)
 
+def add_data(id_ti, bus_company_name, bus_description_time, empty_seat, payable, model):
 
-def add_data(id, bus_company_name, bus_description_time, empty_seat, payable, model):
+    mydb = mysql.connector.connect(
+        host=str(database_info.host),
+        user=str(database_info.user),
+        passwd=str(database_info.passwd),
+        database=str(database_info.database),
+    )
     cursor = mydb.cursor()
-
-    ticket_id_info = int(id)
+    ticket_id_info = int(id_ti)
     company_name_info = str(bus_company_name)
     bus_description_time_info = str(bus_description_time)
     empty_seat_info = str(empty_seat)
